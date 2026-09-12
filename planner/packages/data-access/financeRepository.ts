@@ -179,16 +179,45 @@ export async function setManualRate(
   return rows[0];
 }
 
+import { fetchRates } from './exchangeRateProvider';
+
 /**
- * Сетевой запрос — единственная функция DAL с выходом в интернет (ARCHITECTURE.md).
- * Здесь оставлен каркас: реальный провайдер конфигурируется через app_settings.
- * См. [ЭСКАЛАЦИЯ #5].
+ * Сетевой запрос — единственная функция DAL с выходом в интернет
+ * (ARCHITECTURE.md). Реальная реализация — в exchangeRateProvider.ts.
+ * Здесь сохраняем публичную сигнатуру из API_CONTRACTS.md §3.
+ *
+ * Поведение (после реализации провайдера):
+ *   1. fetchRates(date, currencyCodes)
+ *   2. upsert каждой пары с source='online' через INSERT ... ON CONFLICT
+ *      (не затирая source='manual' на ту же дату — см. DATABASE.md §4)
+ *   3. вернуть сохранённые строки
  */
 export async function refreshOnlineRates(
-  date: string, currencyCodes: string[]
+  date: string,
+  currencyCodes: string[]
 ): Promise<ExchangeRate[]> {
-  void date; void currencyCodes;
-  throw new Error('refreshOnlineRates: not implemented in Phase 1 (requires provider config)');
+  const db = await getDb();
+  const fetched = await fetchRates(date, currencyCodes);
+  const saved: ExchangeRate[] = [];
+  for (const r of fetched) {
+    // не затираем manual-курс на ту же дату
+    await db.execute(
+      `INSERT INTO exchange_rates
+         (base_currency, quote_currency, rate_date, rate, source)
+       VALUES (?, ?, ?, ?, 'online')
+       ON CONFLICT(base_currency, quote_currency, rate_date)
+       DO UPDATE SET rate=excluded.rate, source='online'
+       WHERE exchange_rates.source != 'manual'`,
+      [r.base_currency, r.quote_currency, r.rate_date, r.rate]
+    );
+    const rows = await db.select<ExchangeRate[]>(
+      `SELECT * FROM exchange_rates
+        WHERE base_currency=? AND quote_currency=? AND rate_date=?`,
+      [r.base_currency, r.quote_currency, r.rate_date]
+    );
+    if (rows[0]) saved.push(rows[0]);
+  }
+  return saved;
 }
 
 export async function getPrimaryCurrency(): Promise<string> {
