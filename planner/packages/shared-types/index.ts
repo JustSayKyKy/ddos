@@ -112,6 +112,7 @@ export interface NewGoalInput {
   title: string; description?: string | null; target_date?: string | null;
   progress_type?: GoalProgressType; target_count?: number | null;
   unit_label?: string | null; quick_add_tag?: string | null;
+  status?: GoalStatus;
 }
 export interface GoalLog {
   id: number; goal_id: number; log_date: string;
