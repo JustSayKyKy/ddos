@@ -1,0 +1,21 @@
+[package]
+name = "planner"
+version = "0.1.0"
+description = "Planner Desktop App"
+authors = ["Planner"]
+edition = "2021"
+
+[lib]
+name = "planner_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.5.2", features = [] }
+
+[dependencies]
+tauri = { version = "2.8.5", features = [] }
+tauri-plugin-sql = { version = "2.3.1", features = ["sqlite"] }
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
