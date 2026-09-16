@@ -1,0 +1,20 @@
+# Rust / Tauri
+target/
+**/*.rs.bk
+CACHEDIR.TAG
+
+# Node
+node_modules/
+dist/
+
+# База данных
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -18,8 +18,5 @@
     "packages/**/*.ts",
     "vitest.config.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "src-tauri"
-  ]
+  "exclude": ["node_modules", "apps/desktop/src-tauri"]
 }

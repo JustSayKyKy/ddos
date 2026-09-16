@@ -4,16 +4,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "tauri": "tauri"
-  },
+  "test": "vitest run",
+  "test:watch": "vitest",
+  "tauri": "tauri",
+  "dev": "npm run dev -w @planner/desktop",
+  "build": "npm run build -w @planner/desktop",
+  "typecheck": "npm run typecheck -w @planner/desktop"
+},
   "dependencies": {
-    "@tauri-apps/api": "^2.11.0",
-    "@tauri-apps/plugin-sql": "^2.4.1"
+    "@tauri-apps/api": "2.8.0",
+    "@tauri-apps/plugin-sql": "2.3.1"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.0.0",
+    "@tauri-apps/cli": "2.8.4",
     "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^22.20.2",
     "better-sqlite3": "^12.4.1",
@@ -21,5 +24,9 @@
   },
   "allowScripts": {
     "better-sqlite3@12.11.1": true
-  }
+  },
+  "workspaces": [
+    "apps/desktop",
+    "packages/*"
+  ]
 }
